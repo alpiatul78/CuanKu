@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f766e">
+<link rel="manifest" href="manifest.json">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Bookkeeping">
+<link rel="apple-touch-icon" href="icon-192.png">
+<title>Bookkeeping — Pembukuan Usaha</title>
+<style>
+:root{--accent:#0f766e;--accent2:#14b8a6;--ink:#0f172a;--muted:#64748b;--bg:#f6f8f7;--card:#fff;--line:#e2e8f0;--danger:#dc2626;--warn:#d97706;--good:#15803d;--shadow:0 10px 30px rgba(15,23,42,.08);--radius:18px}
+*{box-sizing:border-box} html,body{margin:0;padding:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,select,textarea{font:inherit} button{cursor:pointer}
+a{color:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:250px 1fr}
+.sidebar{position:sticky;top:0;height:100vh;padding:22px 16px;background:linear-gradient(180deg,#0b3b36 0%,#102d2a 100%);color:#fff;overflow:auto}
+.brand{display:flex;align-items:center;gap:12px;padding:8px 10px 24px}.logo{width:42px;height:42px;border-radius:14px;background:linear-gradient(135deg,var(--accent2),#99f6e4);color:#073b36;display:grid;place-items:center;font-weight:900}.brand strong{font-size:15px;letter-spacing:.2px}.brand small{display:block;color:#cbd5e1;margin-top:2px}
+.nav{display:grid;gap:7px}.nav button{border:0;background:transparent;color:#dbeafe;padding:12px 13px;border-radius:12px;text-align:left;display:flex;gap:10px;align-items:center}.nav button:hover,.nav button.active{background:rgba(255,255,255,.11);color:#fff}.nav .ico{width:22px;text-align:center}
+.side-tip{margin-top:22px;padding:14px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);border-radius:16px;color:#dbeafe;font-size:12px;line-height:1.5}
+.main{min-width:0}.topbar{position:sticky;top:0;z-index:10;background:rgba(246,248,247,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);padding:12px 24px;display:flex;justify-content:space-between;align-items:center;gap:12px}.topbar h1{font-size:16px;margin:0}.topbar .month{display:flex;align-items:center;gap:7px}.topbar input{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 10px}
+.content{padding:26px;max-width:1500px;margin:auto}.page{display:none}.page.active{display:block}
+.hero{min-height:230px;border-radius:24px;padding:28px;color:#fff;position:relative;overflow:hidden;background:linear-gradient(135deg,var(--accent),#115e59)}.hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(2,44,34,.75),rgba(2,44,34,.18));pointer-events:none}.hero.has-wallpaper{background-size:cover;background-position:center}.hero-content{position:relative;z-index:2;max-width:700px}.pill{display:inline-flex;gap:8px;align-items:center;padding:7px 10px;border-radius:999px;background:rgba(255,255,255,.14);font-size:12px}.hero h2{font-size:32px;line-height:1.05;margin:18px 0 8px;letter-spacing:-1px}.hero p{margin:0;opacity:.9;max-width:620px}.hero .actions{margin-top:20px;display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:#fff;color:var(--ink);padding:10px 13px;border-radius:11px;font-weight:700}.btn:hover{filter:brightness(.98)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.ghost{background:transparent;color:inherit;border-color:rgba(255,255,255,.3)}.btn.danger{background:#fff0f0;color:var(--danger);border-color:#fecaca}.btn.sm{padding:7px 9px;font-size:12px}.btn.full{width:100%}
+.kpis{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px;margin-top:15px}.kpi{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 6px 18px rgba(15,23,42,.04)}.kpi .label{font-size:12px;color:var(--muted);display:flex;justify-content:space-between;gap:8px}.kpi .value{font-size:21px;font-weight:800;margin-top:7px}.kpi .sub{margin-top:4px;font-size:11px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1.25fr .75fr;gap:15px;margin-top:15px}.card{background:#fff;border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 6px 18px rgba(15,23,42,.04);overflow:hidden}.card-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:17px 18px;border-bottom:1px solid var(--line)}.card-head h3{font-size:14px;margin:0}.card-body{padding:18px}.muted{color:var(--muted)}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.toolbar input,.toolbar select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 10px}
+.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid.three{grid-template-columns:repeat(3,minmax(0,1fr))}.field{display:grid;gap:6px}.field label{font-size:12px;font-weight:700;color:#334155}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fff;outline:none}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(20,184,166,.13)}.field small{color:var(--muted);font-size:11px}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}
+.table-wrap{overflow:auto}.table{width:100%;border-collapse:collapse;min-width:760px}.table th,.table td{padding:11px 12px;border-bottom:1px solid var(--line);text-align:left;font-size:12px;vertical-align:middle}.table th{color:var(--muted);font-weight:800;background:#fafafa;position:sticky;top:0}.table tr:last-child td{border-bottom:0}.right{text-align:right!important}.center{text-align:center!important}
+.badge{display:inline-flex;align-items:center;padding:5px 8px;border-radius:999px;font-size:11px;font-weight:800}.b-live{background:#dcfce7;color:#166534}.b-dead{background:#fee2e2;color:#991b1b}.b-afkir{background:#ffedd5;color:#9a3412}.b-sold{background:#dbeafe;color:#1d4ed8}.b-partner{background:#ede9fe;color:#6d28d9}.b-own{background:#ecfeff;color:#0e7490}
+.section-title{margin:24px 0 12px;font-size:18px}.empty{padding:30px;text-align:center;color:var(--muted)}
+.mini-chart{height:230px;display:grid;grid-template-columns:repeat(6,1fr);gap:9px;align-items:end;padding:8px 4px 24px}.bar-col{height:100%;display:flex;align-items:end;justify-content:center;position:relative}.bar{width:70%;max-width:42px;border-radius:8px 8px 3px 3px;background:linear-gradient(180deg,var(--accent2),var(--accent));min-height:2px}.bar-label{position:absolute;bottom:-20px;font-size:10px;color:var(--muted)}.bar-value{position:absolute;top:-18px;font-size:9px;color:#475569}
+.progress{height:9px;background:#e2e8f0;border-radius:999px;overflow:hidden}.progress > span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:999px}
+.stat-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}.stat-row:last-child{border-bottom:0}.stat-row strong{font-size:13px}.stat-row small{color:var(--muted)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.45);display:none;align-items:center;justify-content:center;z-index:30;padding:16px}.modal-backdrop.open{display:flex}.modal{background:#fff;width:min(760px,100%);max-height:90vh;overflow:auto;border-radius:20px;box-shadow:0 30px 70px rgba(15,23,42,.22)}.modal-head{padding:17px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}.modal-head h3{margin:0;font-size:16px}.modal-body{padding:18px}.close{border:0;background:#f1f5f9;width:34px;height:34px;border-radius:10px}
+.toast{position:fixed;right:18px;bottom:18px;background:#0f172a;color:#fff;padding:12px 14px;border-radius:12px;box-shadow:0 15px 40px rgba(15,23,42,.2);display:none;z-index:50;font-size:13px}.toast.show{display:block}
+.partner-list{display:grid;gap:8px;margin-top:12px}.partner-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--line);border-radius:12px}.partner-item div:first-child{min-width:0}.partner-item strong{display:block;font-size:13px}.partner-item small{color:var(--muted)}
+.note{font-size:12px;line-height:1.55;color:#475569;background:#f8fafc;border:1px solid var(--line);padding:12px;border-radius:12px}.positive{color:var(--good)}.negative{color:var(--danger)}
+.print-only{display:none}
+@media (max-width:1100px){.app{grid-template-columns:86px 1fr}.brand div:last-child,.nav button span.label,.side-tip{display:none}.brand{justify-content:center}.nav button{justify-content:center}.kpis{grid-template-columns:repeat(3,1fr)}}
+@media (max-width:760px){.app{display:block}.sidebar{position:sticky;height:auto;top:0;z-index:20;padding:9px 10px}.brand{padding:2px 0 8px;display:none}.nav{display:flex;overflow:auto}.nav button{flex:0 0 auto;padding:10px 11px}.nav .label{display:block}.topbar{padding:10px 14px}.content{padding:15px}.hero h2{font-size:26px}.kpis{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}.form-grid,.form-grid.three{grid-template-columns:1fr}.table{min-width:700px}.toolbar>*{flex:1 1 auto}.toolbar .btn{flex:0 0 auto}}
+@media print{.sidebar,.topbar,.actions,.toolbar,.btn,.modal-backdrop{display:none!important}.app{display:block}.content{padding:0}.page{display:none!important}.page.active{display:block!important}.print-only{display:block}.card,.hero{box-shadow:none;border:1px solid #ccc}.hero{min-height:auto;color:#000;background:#fff!important}.hero::after{display:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">🐟</div><div><strong id="sideBusinessName">Bookkeeping</strong><small>Pembukuan usaha</small></div></div>
+    <nav class="nav" id="nav">
+      <button class="active" data-page="dashboard"><span class="ico">⌂</span><span class="label">Dashboard</span></button>
+      <button data-page="stok"><span class="ico">🐟</span><span class="label">Stok Ikan</span></button>
+      <button data-page="jual"><span class="ico">💰</span><span class="label">Jual</span></button>
+      <button data-page="biaya"><span class="ico">🧾</span><span class="label">Biaya</span></button>
+      <button data-page="laporan"><span class="ico">📊</span><span class="label">Laporan</span></button>
+      <button data-page="utang"><span class="ico">💳</span><span class="label">Utang</span></button>
+      <button data-page="profil"><span class="ico">🎨</span><span class="label">Profil</span></button>
+    </nav>
+    <div class="side-tip">Semua data tersimpan di perangkat ini. Gunakan <b>Backup JSON</b> secara berkala agar data aman.</div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h1 id="pageTitle">Dashboard</h1>
+      <div class="month"><span class="muted">Bulan:</span><input type="month" id="globalMonth"></div>
+    </header>
+
+    <div class="content">
+      <section class="page active" id="page-dashboard">
+        <div id="hero" class="hero">
+          <div class="hero-content">
+            <span class="pill">🐟 Buku usaha pembesaran Channa Auranti Gondrong</span>
+            <h2 id="heroName">Bookkeeping</h2>
+            <p id="heroSubtitle">Catat bibit, penjualan, bagi hasil partner, biaya, utang, dan laba bulanan dalam satu tempat.</p>
+            <div class="actions"><button class="btn ghost" id="installAppBtn" type="button" hidden>⬇ Install Bookkeeping</button><button class="btn ghost" onclick="openFishModal()">+ Tambah ikan</button><button class="btn ghost" onclick="openSaleModal()">+ Catat penjualan</button><button class="btn ghost" onclick="goPage('laporan')">Lihat laporan</button></div>
+          </div>
+        </div>
+        <div class="kpis" id="dashboardKpis"></div>
+        <div class="grid">
+          <div class="card"><div class="card-head"><h3>Ringkasan penjualan 6 bulan</h3><span class="muted" id="chartLabel"></span></div><div class="card-body"><div class="mini-chart" id="salesChart"></div></div></div>
+          <div class="card"><div class="card-head"><h3>Posisi stok</h3><button class="btn sm" onclick="goPage('stok')">Kelola stok</button></div><div class="card-body" id="stockSummary"></div></div>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="card-head"><h3>Penjualan bulan ini</h3><button class="btn sm" onclick="goPage('jual')">Buka menu jual</button></div><div class="card-body table-wrap" id="recentSales"></div></div>
+          <div class="card"><div class="card-head"><h3>Partner & bagi hasil</h3><button class="btn sm" onclick="goPage('profil')">Atur partner</button></div><div class="card-body" id="partnerSummary"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-stok">
+        <div class="card"><div class="card-head"><div><h3>Stok ikan</h3><div class="muted" style="font-size:12px;margin-top:4px">Satu kode = satu ikan, sehingga penjualan bisa dilacak sampai ekor.</div></div><button class="btn primary" onclick="openFishModal()">+ Tambah ikan</button></div>
+          <div class="card-body">
+            <div class="toolbar"><input id="fishSearch" placeholder="Cari kode / partner..." oninput="renderFishTable()"><select id="fishStatusFilter" onchange="renderFishTable()"><option value="all">Semua status</option><option value="hidup">Hidup</option><option value="mati">Mati</option><option value="afkir">Afkir</option><option value="terjual">Terjual</option></select><select id="fishSourceFilter" onchange="renderFishTable()"><option value="all">Semua pemilik</option><option value="own">Milik sendiri</option><option value="partner">Partner</option></select></div>
+            <div class="table-wrap" style="margin-top:13px" id="fishTable"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="page" id="page-jual">
+        <div class="card"><div class="card-head"><div><h3>Penjualan ikan</h3><div class="muted" style="font-size:12px;margin-top:4px">Harga jual dapat diedit kapan saja bila salah input.</div></div><button class="btn primary" onclick="openSaleModal()">+ Catat penjualan</button></div>
+          <div class="card-body"><div class="toolbar"><input id="saleSearch" placeholder="Cari kode / pembeli..." oninput="renderSaleTable()"><button class="btn" onclick="exportSalesCsv()">Export CSV</button></div><div class="table-wrap" style="margin-top:13px" id="saleTable"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-biaya">
+        <div class="card"><div class="card-head"><div><h3>Biaya operasional</h3><div class="muted" style="font-size:12px;margin-top:4px">Contoh: pakan, listrik, obat, packing, ongkir, dan biaya usaha lain.</div></div><button class="btn primary" onclick="openExpenseModal()">+ Tambah biaya</button></div>
+          <div class="card-body"><div class="toolbar"><select id="expenseCategoryFilter" onchange="renderExpenseTable()"><option value="all">Semua kategori</option><option>Pakan</option><option>Listrik</option><option>Obat</option><option>Packing</option><option>Ongkir</option><option>Lainnya</option></select><button class="btn" onclick="exportExpenseCsv()">Export CSV</button></div><div class="table-wrap" style="margin-top:13px" id="expenseTable"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-laporan">
+        <div class="print-only"><h1 id="printBusinessName">Laporan usaha</h1><p id="printPeriod"></p></div>
+        <div class="card"><div class="card-head"><div><h3>Laporan bulanan</h3><div class="muted" style="font-size:12px;margin-top:4px">Angka laba dihitung otomatis dari penjualan, modal bibit terjual, bagi hasil partner, biaya operasional, dan ikan mati/afkir.</div></div><div class="toolbar"><input type="month" id="reportMonth"><button class="btn" onclick="window.print()">Cetak</button><button class="btn primary" onclick="exportReportCsv()">Export CSV</button></div></div>
+          <div class="card-body" id="reportBody"></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-utang">
+        <div class="grid">
+          <div class="card"><div class="card-head"><div><h3>Utang usaha</h3><div class="muted" style="font-size:12px;margin-top:4px">Cocok untuk utang pembelian aset usaha maupun kebutuhan lainnya.</div></div><button class="btn primary" onclick="openDebtModal()">+ Catat utang</button></div><div class="card-body" id="debtSummary"></div><div class="table-wrap" id="debtTable"></div></div>
+          <div class="card"><div class="card-head"><h3>Pembayaran utang</h3><button class="btn primary" onclick="openDebtPaymentModal()">+ Catat pembayaran</button></div><div class="card-body" id="debtPaymentTable"></div></div>
+        </div>
+      </section>
+
+      <section class="page" id="page-profil">
+        <div class="grid">
+          <div class="card"><div class="card-head"><h3>Profil & tampilan beranda</h3></div><div class="card-body">
+            <div class="form-grid">
+              <div class="field"><label>Nama usaha / judul</label><input id="profileName" placeholder="Contoh: Auranti Farm"></div>
+              <div class="field"><label>Subjudul beranda</label><input id="profileSubtitle" placeholder="Pembesaran Channa Auranti Gondrong"></div>
+              <div class="field"><label>Modal awal</label><input id="profileCapital" type="number" min="0" step="1000" placeholder="0"></div>
+              <div class="field"><label>Warna tema</label><input id="profileTheme" type="color"></div>
+            </div>
+            <div class="field" style="margin-top:12px"><label>Wallpaper beranda</label><input id="wallpaperFile" type="file" accept="image/*"><small>Gambar diperkecil otomatis agar penyimpanan lokal tetap ringan.</small></div>
+            <div class="form-actions"><button class="btn" onclick="removeWallpaper()">Hapus wallpaper</button><button class="btn primary" onclick="saveProfile()">Simpan profil</button></div>
+            <div class="note" style="margin-top:14px">Catatan bagi hasil: pada tiap ikan, isi <b>porsi partner (%)</b>. Misalnya 50 berarti partner mendapat 50% dari laba setelah modal bibit dikembalikan. 70 berarti partner mendapat 70% dan usaha 30%.</div>
+          </div></div>
+          <div class="card"><div class="card-head"><h3>Partner & porsi default</h3></div><div class="card-body">
+            <div class="form-grid"><div class="field"><label>Nama partner</label><input id="partnerNameInput" placeholder="Nama partner"></div><div class="field"><label>Porsi partner default (%)</label><input id="partnerShareInput" type="number" min="0" max="100" value="50"></div></div>
+            <div class="form-actions"><button class="btn primary" onclick="addPartner()">+ Tambah partner</button></div>
+            <div id="partnerList" class="partner-list"></div>
+          </div></div>
+        </div>
+        <div class="grid">
+          <div class="card"><div class="card-head"><h3>Backup data</h3></div><div class="card-body"><p class="muted" style="font-size:13px">Backup menyimpan seluruh data usaha, termasuk pengaturan wallpaper.</p><div class="toolbar"><button class="btn primary" onclick="backupJson()">⬇ Backup JSON</button><label class="btn" style="display:inline-flex;align-items:center;gap:8px">⬆ Restore JSON<input id="restoreFile" type="file" accept="application/json" hidden onchange="restoreJson(event)"></label></div></div></div>
+          <div class="card"><div class="card-head"><h3>Data demo</h3></div><div class="card-body"><p class="muted" style="font-size:13px">Muat contoh transaksi untuk melihat cara kerja perhitungan. Data sekarang akan ditimpa.</p><button class="btn" onclick="loadDemo()">Muat data demo</button> <button class="btn danger" onclick="resetAll()">Hapus semua data</button></div></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<div class="modal-backdrop" id="modalBackdrop" onclick="modalBackdropClick(event)"><div class="modal" id="modal"><div class="modal-head"><h3 id="modalTitle">Form</h3><button class="close" onclick="closeModal()">✕</button></div><div class="modal-body" id="modalBody"></div></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+const KEY='channagrow_buku_v1';
+const defaultState={version:1,profile:{name:'Bookkeeping',subtitle:'Pembukuan usaha pembesaran Channa Auranti Gondrong',capital:0,theme:'#0f766e',wallpaper:''},partners:[],fish:[],sales:[],expenses:[],debts:[],debtPayments:[]};
+let state=loadState();
+let activePage='dashboard';
+
+function clone(o){return JSON.parse(JSON.stringify(o))}
+function loadState(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');return x?{...clone(defaultState),...x,profile:{...defaultState.profile,...(x.profile||{})}}:clone(defaultState)}catch(e){return clone(defaultState)}}
+function saveState(){localStorage.setItem(KEY,JSON.stringify(state));applyProfileTheme();renderAll()}
+function uid(prefix='id'){return prefix+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,8)}
+function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function money(n){return new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Number(n)||0)}
+function num(n){return Number(n)||0}
+function fmtDate(v){if(!v)return '-';const d=new Date(v+'T00:00:00');return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'})}
+function monthKey(v){return (v||'').slice(0,7)}
+function monthLabel(k){if(!k)return '';const [y,m]=k.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('id-ID',{month:'long',year:'numeric'})}
+function today(){return new Date().toISOString().slice(0,10)}
+function currentMonth(){return today().slice(0,7)}
+function monthRange(key){const [y,m]=key.split('-').map(Number);return {start:new Date(y,m-1,1),end:new Date(y,m,0)} }
+function inMonth(date,key){return monthKey(date)===key}
+function getFishById(id){return state.fish.find(x=>x.id===id)}
+function getFishByCode(code){return state.fish.find(x=>x.code.toLowerCase()===String(code).toLowerCase())}
+function getPartner(id){return state.partners.find(x=>x.id===id)}
+function partnerName(f){return f.partnerNameSnapshot || (getPartner(f.partnerId)?.name||'Partner')}
+function profitFromSale(s){const f=getFishById(s.fishId);if(!f)return 0;return num(s.price)-num(f.cost)}
+function partnerPayout(s){const f=getFishById(s.fishId);if(!f||f.source!=='partner')return 0;return Math.max(0,profitFromSale(s))*num(f.partnerShare)/100}
+function saleBusinessShare(s){return Math.max(0,profitFromSale(s))-partnerPayout(s)}
+function debtPaid(id){return state.debtPayments.filter(p=>p.debtId===id).reduce((a,p)=>a+num(p.amount),0)}
+function outstandingDebt(d){return Math.max(0,num(d.amount)-debtPaid(d.id))}
+function metrics(key){
+  const sales=state.sales.filter(s=>inMonth(s.date,key));
+  const revenue=sales.reduce((a,s)=>a+num(s.price),0);
+  const cogs=sales.reduce((a,s)=>a+(getFishById(s.fishId)?.cost||0),0);
+  const gross=revenue-cogs;
+  const partner= sales.reduce((a,s)=>a+partnerPayout(s),0);
+  const expenses=state.expenses.filter(e=>inMonth(e.date,key)).reduce((a,e)=>a+num(e.amount),0);
+  const writeoffs=state.fish.filter(f=>['mati','afkir'].includes(f.status)&&inMonth(f.statusDate||f.purchaseDate,key)).reduce((a,f)=>a+num(f.cost),0);
+  const net=gross-partner-expenses-writeoffs;
+  return {sales,revenue,cogs,gross,partner,expenses,writeoffs,net,businessBeforeExpenses:gross-partner};
+}
+function stockSnapshot(key){
+  const {end}=monthRange(key);const endStr=end.toISOString().slice(0,10);
+  let counts={hidup:0,mati:0,afkir:0,terjual:0};let valueLive=0;
+  state.fish.forEach(f=>{
+    if(f.purchaseDate>endStr)return;
+    const sale=state.sales.find(s=>s.fishId===f.id);
+    if(sale&&sale.date<=endStr){counts.terjual++;return}
+    let st=f.status||'hidup'; const sd=f.statusDate||f.purchaseDate;
+    if(sd>endStr)st='hidup';
+    if(counts[st]==null)counts[st]=0; counts[st]++;
+    if(st==='hidup')valueLive+=num(f.cost);
+  });
+  return {...counts,valueLive};
+}
+function applyProfileTheme(){document.documentElement.style.setProperty('--accent',state.profile.theme||'#0f766e');document.documentElement.style.setProperty('--accent2',lighten(state.profile.theme||'#0f766e',45));document.querySelector('meta[name="theme-color"]').setAttribute('content',state.profile.theme||'#0f766e');}
+function lighten(hex,amt){try{let h=hex.replace('#','');if(h.length!==6)return '#14b8a6';let r=parseInt(h.slice(0,2),16),g=parseInt(h.slice(2,4),16),b=parseInt(h.slice(4,6),16);r=Math.min(255,r+amt);g=Math.min(255,g+amt);b=Math.min(255,b+amt);return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('')}catch{return '#14b8a6'}}
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(window._toast);window._toast=setTimeout(()=>el.classList.remove('show'),2200)}
+function goPage(page){activePage=page;document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id==='page-'+page));document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===page));document.getElementById('pageTitle').textContent={dashboard:'Dashboard',stok:'Stok Ikan',jual:'Jual',biaya:'Biaya',laporan:'Laporan',utang:'Utang',profil:'Profil'}[page]||'Dashboard';if(page==='laporan')renderReport();window.scrollTo({top:0,behavior:'smooth'})}
+
+document.getElementById('nav').addEventListener('click',e=>{const b=e.target.closest('button[data-page]');if(b)goPage(b.dataset.page)});
+const gm=document.getElementById('globalMonth');gm.value=currentMonth();gm.addEventListener('change',()=>{document.getElementById('reportMonth').value=gm.value;renderDashboard();renderReport();renderRecentSales();renderPartnerSummary()});
+document.getElementById('reportMonth').value=currentMonth();document.getElementById('reportMonth').addEventListener('change',()=>{gm.value=document.getElementById('reportMonth').value;renderReport();renderDashboard();renderRecentSales();renderPartnerSummary()});
+
+autoProfileFields();applyProfileTheme();renderAll();
+function autoProfileFields(){document.getElementById('profileName').value=state.profile.name||'';document.getElementById('profileSubtitle').value=state.profile.subtitle||'';document.getElementById('profileCapital').value=num(state.profile.capital);document.getElementById('profileTheme').value=state.profile.theme||'#0f766e'}
+function renderAll(){renderHero();renderDashboard();renderFishTable();renderSaleTable();renderExpenseTable();renderReport();renderDebt();renderPartnerList();renderProfileFields();}
+function renderProfileFields(){document.getElementById('sideBusinessName').textContent=state.profile.name||'Bookkeeping';}
+function renderHero(){const h=document.getElementById('hero');document.getElementById('heroName').textContent=state.profile.name||'Bookkeeping';document.getElementById('heroSubtitle').textContent=state.profile.subtitle||'Pembukuan usaha pembesaran Channa Auranti Gondrong';if(state.profile.wallpaper){h.classList.add('has-wallpaper');h.style.backgroundImage=`url(${state.profile.wallpaper})`}else{h.classList.remove('has-wallpaper');h.style.backgroundImage=''}}
+function renderDashboard(){const key=gm.value||currentMonth(),m=metrics(key),stock=stockSnapshot(key),fishTotal=stock.hidup+stock.mati+stock.afkir+stock.terjual;const debt=state.debts.reduce((a,d)=>a+outstandingDebt(d),0);
+ const cards=[['Penjualan bulan ini',money(m.revenue),'Omzet penjualan'],['Laba kotor sebelum bagi hasil',money(m.gross),`Omzet - HPP bibit ${money(m.cogs)}`],['Bagi hasil partner',money(m.partner),'Payout partner'],['Biaya operasional',money(m.expenses),`+ rugi stok ${money(m.writeoffs)}`],['Laba bersih bisnis',money(m.net),`Setelah bagi hasil & biaya`],['Stok ikan',stock.hidup+' ekor',`${stock.mati} mati • ${stock.afkir} afkir • ${stock.terjual} terjual`]];
+ document.getElementById('dashboardKpis').innerHTML=cards.map((c,i)=>`<div class="kpi"><div class="label"><span>${c[0]}</span><span>${i===4?(m.net>=0?'✓':'!'):''}</span></div><div class="value ${i===4?(m.net>=0?'positive':'negative'):''}">${c[1]}</div><div class="sub">${c[2]}</div></div>`).join('');
+ document.getElementById('chartLabel').textContent='Omzet per bulan';renderSalesChart();renderStockSummary(stock);renderRecentSales();renderPartnerSummary();
+}
+function renderSalesChart(){const base=new Date();const months=[];for(let i=5;i>=0;i--){const d=new Date(base.getFullYear(),base.getMonth()-i,1);months.push(d.toISOString().slice(0,7))}const vals=months.map(k=>state.sales.filter(s=>inMonth(s.date,k)).reduce((a,s)=>a+num(s.price),0));const max=Math.max(...vals,1);document.getElementById('salesChart').innerHTML=months.map((k,i)=>`<div class="bar-col"><span class="bar-value">${vals[i]?moneyShort(vals[i]):''}</span><div class="bar" style="height:${Math.max(2,vals[i]/max*100)}%"></div><span class="bar-label">${new Date(k+'-01T00:00:00').toLocaleDateString('id-ID',{month:'short'})}</span></div>`).join('')}
+function moneyShort(n){n=Number(n)||0;if(n>=1000000)return 'Rp '+(n/1000000).toFixed(1)+'jt';if(n>=1000)return 'Rp '+Math.round(n/1000)+'rb';return 'Rp '+n}
+function renderStockSummary(s){const total=(s.hidup||0)+(s.mati||0)+(s.afkir||0)+(s.terjual||0);const rows=[['Hidup','hidup',s.hidup],['Mati','mati',s.mati],['Afkir','afkir',s.afkir],['Terjual','terjual',s.terjual]];document.getElementById('stockSummary').innerHTML=rows.map(r=>`<div class="stat-row"><div><strong>${r[0]}</strong><br><small>${total?((r[2]/total)*100).toFixed(0):0}% dari histori stok</small></div><div><b>${r[2]} ekor</b></div></div>`).join('')+`<div class="note" style="margin-top:12px">Nilai modal stok hidup saat ini: <b>${money(s.valueLive)}</b></div>`}
+function renderRecentSales(){const key=gm.value||currentMonth();const rows=state.sales.filter(s=>inMonth(s.date,key)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,8);document.getElementById('recentSales').innerHTML=rows.length?`<table class="table" style="min-width:620px"><thead><tr><th>Tanggal</th><th>Kode</th><th>Partner</th><th class="right">Harga</th><th class="right">Laba</th></tr></thead><tbody>${rows.map(s=>{const f=getFishById(s.fishId);return `<tr><td>${fmtDate(s.date)}</td><td><b>${escapeHtml(s.code)}</b></td><td>${f?.source==='partner'?escapeHtml(partnerName(f)):'Milik sendiri'}</td><td class="right">${money(s.price)}</td><td class="right">${money(profitFromSale(s))}</td></tr>`}).join('')}</tbody></table>`:`<div class="empty">Belum ada penjualan pada ${monthLabel(key)}.</div>`}
+function renderPartnerSummary(){const key=gm.value||currentMonth(),m=metrics(key);const map={};m.sales.forEach(s=>{const f=getFishById(s.fishId);if(f?.source==='partner'){const name=partnerName(f);map[name]=(map[name]||0)+partnerPayout(s)}});const entries=Object.entries(map).sort((a,b)=>b[1]-a[1]);document.getElementById('partnerSummary').innerHTML=entries.length?entries.map(([n,v])=>`<div class="stat-row"><div><strong>${escapeHtml(n)}</strong><br><small>Penghasilan partner ${monthLabel(key)}</small></div><div><b>${money(v)}</b></div></div>`).join(''):`<div class="empty">Belum ada bagi hasil partner pada bulan ini.</div>`}
+
+function renderFishTable(){const q=(document.getElementById('fishSearch')?.value||'').toLowerCase();const st=document.getElementById('fishStatusFilter')?.value||'all';const src=document.getElementById('fishSourceFilter')?.value||'all';let rows=state.fish.filter(f=>(st==='all'||f.status===st)&&(src==='all'||f.source===src)&&(`${f.code} ${partnerName(f)} ${f.notes||''}`.toLowerCase().includes(q))).sort((a,b)=>b.purchaseDate.localeCompare(a.purchaseDate));document.getElementById('fishTable').innerHTML=rows.length?`<table class="table"><thead><tr><th>Kode</th><th>Pemilik</th><th>Tgl beli</th><th class="right">Modal bibit</th><th class="center">Porsi partner</th><th>Status</th><th>Aksi</th></tr></thead><tbody>${rows.map(f=>{const statusClass={hidup:'b-live',mati:'b-dead',afkir:'b-afkir',terjual:'b-sold'}[f.status]||'b-live';return `<tr><td><b>${escapeHtml(f.code)}</b></td><td><span class="badge ${f.source==='partner'?'b-partner':'b-own'}">${f.source==='partner'?escapeHtml(partnerName(f)):'Milik sendiri'}</span></td><td>${fmtDate(f.purchaseDate)}</td><td class="right">${money(f.cost)}</td><td class="center">${num(f.partnerShare)}%</td><td><span class="badge ${statusClass}">${f.status}</span></td><td><button class="btn sm" onclick="openFishModal('${f.id}')">Edit</button></td></tr>`}).join('')}</tbody></table>`:`<div class="empty">Belum ada stok yang sesuai filter.</div>`}
+
+function renderSaleTable(){const q=(document.getElementById('saleSearch')?.value||'').toLowerCase();let rows=state.sales.filter(s=>`${s.code} ${s.buyer||''}`.toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('saleTable').innerHTML=rows.length?`<table class="table"><thead><tr><th>Tanggal</th><th>Kode</th><th>Pembeli</th><th class="right">Modal</th><th class="right">Harga jual</th><th class="right">Laba</th><th>Porsi partner</th><th>Aksi</th></tr></thead><tbody>${rows.map(s=>{const f=getFishById(s.fishId);return `<tr><td>${fmtDate(s.date)}</td><td><b>${escapeHtml(s.code)}</b></td><td>${escapeHtml(s.buyer||'-')}</td><td class="right">${money(f?.cost||0)}</td><td class="right"><b>${money(s.price)}</b></td><td class="right ${profitFromSale(s)>=0?'positive':'negative'}">${money(profitFromSale(s))}</td><td>${f?.source==='partner'?escapeHtml(partnerName(f))+' • '+num(f.partnerShare)+'%':'Sendiri • 100%'}</td><td><button class="btn sm" onclick="openSaleModal('${s.id}')">Edit</button> <button class="btn sm danger" onclick="deleteSale('${s.id}')">Hapus</button></td></tr>`}).join('')}</tbody></table>`:`<div class="empty">Belum ada data penjualan.</div>`}
+
+function renderExpenseTable(){const cat=document.getElementById('expenseCategoryFilter')?.value||'all';let rows=state.expenses.filter(e=>cat==='all'||e.category===cat).sort((a,b)=>b.date.localeCompare(a.date));const total=rows.reduce((a,e)=>a+num(e.amount),0);document.getElementById('expenseTable').innerHTML=rows.length?`<table class="table"><thead><tr><th>Tanggal</th><th>Kategori</th><th>Keterangan</th><th class="right">Jumlah</th><th>Aksi</th></tr></thead><tbody>${rows.map(e=>`<tr><td>${fmtDate(e.date)}</td><td><span class="badge b-own">${escapeHtml(e.category)}</span></td><td>${escapeHtml(e.desc)}</td><td class="right"><b>${money(e.amount)}</b></td><td><button class="btn sm" onclick="openExpenseModal('${e.id}')">Edit</button> <button class="btn sm danger" onclick="deleteExpense('${e.id}')">Hapus</button></td></tr>`).join('')}<tr><td colspan="3"><b>Total tampilan</b></td><td class="right"><b>${money(total)}</b></td><td></td></tr></tbody></table>`:`<div class="empty">Belum ada biaya.</div>`}
+
+function renderReport(){const key=document.getElementById('reportMonth')?.value||currentMonth();const m=metrics(key),s=stockSnapshot(key);document.getElementById('printBusinessName').textContent=state.profile.name||'Laporan usaha';document.getElementById('printPeriod').textContent=monthLabel(key);const partnerMap={};m.sales.forEach(x=>{const f=getFishById(x.fishId);if(f?.source==='partner'){const n=partnerName(f);partnerMap[n]=(partnerMap[n]||0)+partnerPayout(x)}});const partners=Object.entries(partnerMap).sort((a,b)=>b[1]-a[1]);
+ document.getElementById('reportBody').innerHTML=`
+ <div class="kpis" style="margin-top:0"><div class="kpi"><div class="label">Penjualan</div><div class="value">${money(m.revenue)}</div><div class="sub">${m.sales.length} transaksi</div></div><div class="kpi"><div class="label">HPP bibit</div><div class="value">${money(m.cogs)}</div><div class="sub">Modal ikan terjual</div></div><div class="kpi"><div class="label">Laba kotor</div><div class="value">${money(m.gross)}</div><div class="sub">Sebelum bagi hasil</div></div><div class="kpi"><div class="label">Bagi hasil partner</div><div class="value">${money(m.partner)}</div><div class="sub">Profit yang dibagikan</div></div><div class="kpi"><div class="label">Biaya + rugi stok</div><div class="value">${money(m.expenses+m.writeoffs)}</div><div class="sub">Operasional + mati/afkir</div></div><div class="kpi"><div class="label">Laba bersih bisnis</div><div class="value ${m.net>=0?'positive':'negative'}">${money(m.net)}</div><div class="sub">Bagian usaha setelah semua</div></div></div>
+ <div class="grid"><div class="card"><div class="card-head"><h3>Laporan pendapatan partner</h3></div><div class="card-body">${partners.length?partners.map(([n,v])=>`<div class="stat-row"><div><strong>${escapeHtml(n)}</strong><br><small>Total bagian partner di ${monthLabel(key)}</small></div><div><b>${money(v)}</b></div></div>`).join(''):`<div class="empty">Tidak ada pendapatan partner di bulan ini.</div>`}</div></div>
+ <div class="card"><div class="card-head"><h3>Stok</h3></div><div class="card-body"><div class="stat-row"><div><strong>Hidup</strong></div><div><b>${s.hidup} ekor</b></div></div><div class="stat-row"><div><strong>Mati</strong></div><div><b>${s.mati} ekor</b></div></div><div class="stat-row"><div><strong>Afkir</strong></div><div><b>${s.afkir} ekor</b></div></div><div class="stat-row"><div><strong>Terjual</strong></div><div><b>${s.terjual} ekor</b></div></div><div class="note" style="margin-top:12px">Snapshot stok akhir periode berdasarkan status terakhir yang dicatat.</div></div></div></div>
+ <div class="card"><div class="card-head"><h3>Rincian laba</h3></div><div class="card-body"><div class="stat-row"><div><strong>Penjualan</strong></div><div><b>${money(m.revenue)}</b></div></div><div class="stat-row"><div><strong>− Modal bibit terjual</strong></div><div class="negative"><b>− ${money(m.cogs)}</b></div></div><div class="stat-row"><div><strong>= Laba kotor sebelum bagi hasil</strong></div><div><b>${money(m.gross)}</b></div></div><div class="stat-row"><div><strong>− Bagi hasil partner</strong></div><div class="negative"><b>− ${money(m.partner)}</b></div></div><div class="stat-row"><div><strong>− Biaya operasional</strong></div><div class="negative"><b>− ${money(m.expenses)}</b></div></div><div class="stat-row"><div><strong>− Kerugian ikan mati/afkir</strong></div><div class="negative"><b>− ${money(m.writeoffs)}</b></div></div><div class="stat-row"><div><strong>= Laba bersih bisnis</strong></div><div class="${m.net>=0?'positive':'negative'}"><b>${money(m.net)}</b></div></div></div></div>`}
+
+function renderDebt(){const total=state.debts.reduce((a,d)=>a+num(d.amount),0),paid=state.debtPayments.reduce((a,p)=>a+num(p.amount),0),out=state.debts.reduce((a,d)=>a+outstandingDebt(d),0);document.getElementById('debtSummary').innerHTML=`<div class="kpis" style="margin-top:0;grid-template-columns:repeat(3,1fr)"><div class="kpi"><div class="label">Total utang</div><div class="value">${money(total)}</div></div><div class="kpi"><div class="label">Sudah dibayar</div><div class="value">${money(paid)}</div></div><div class="kpi"><div class="label">Sisa utang</div><div class="value ${out?'negative':'positive'}">${money(out)}</div></div></div>`;const debts=state.debts.slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('debtTable').innerHTML=debts.length?`<table class="table"><thead><tr><th>Tanggal</th><th>Utang kepada</th><th>Kegunaan</th><th>Aset</th><th class="right">Nilai</th><th class="right">Sisa</th><th>Aksi</th></tr></thead><tbody>${debts.map(d=>`<tr><td>${fmtDate(d.date)}</td><td><b>${escapeHtml(d.creditor)}</b></td><td>${escapeHtml(d.purpose)}</td><td>${escapeHtml(d.assetName||'-')}</td><td class="right">${money(d.amount)}</td><td class="right"><b>${money(outstandingDebt(d))}</b></td><td><button class="btn sm" onclick="openDebtModal('${d.id}')">Edit</button> <button class="btn sm danger" onclick="deleteDebt('${d.id}')">Hapus</button></td></tr>`).join('')}</tbody></table>`:`<div class="empty">Belum ada utang.</div>`;const pays=state.debtPayments.slice().sort((a,b)=>b.date.localeCompare(a.date));document.getElementById('debtPaymentTable').innerHTML=pays.length?`<div class="table-wrap"><table class="table" style="min-width:620px"><thead><tr><th>Tanggal</th><th>Utang</th><th>Sumber pembayaran</th><th class="right">Jumlah</th><th>Aksi</th></tr></thead><tbody>${pays.map(p=>{const d=state.debts.find(x=>x.id===p.debtId);return `<tr><td>${fmtDate(p.date)}</td><td>${escapeHtml(d?.creditor||'Utang terhapus')}</td><td>${p.source==='profit'?'Keuntungan bisnis':'Dana lain'}</td><td class="right">${money(p.amount)}</td><td><button class="btn sm danger" onclick="deleteDebtPayment('${p.id}')">Hapus</button></td></tr>`}).join('')}</tbody></table></div>`:`<div class="empty">Belum ada pembayaran utang.</div>`}
+
+function renderPartnerList(){const el=document.getElementById('partnerList');el.innerHTML=state.partners.length?state.partners.map(p=>`<div class="partner-item"><div><strong>${escapeHtml(p.name)}</strong><small>Porsi default ${num(p.defaultShare)}%</small></div><button class="btn sm danger" onclick="deletePartner('${p.id}')">Hapus</button></div>`).join(''):`<div class="empty" style="padding:16px">Belum ada partner.</div>`}
+
+function modal(title,html){document.getElementById('modalTitle').textContent=title;document.getElementById('modalBody').innerHTML=html;document.getElementById('modalBackdrop').classList.add('open')}
+function closeModal(){document.getElementById('modalBackdrop').classList.remove('open')}
+function modalBackdropClick(e){if(e.target.id==='modalBackdrop')closeModal()}
+function optionHtml(val,text,selected){return `<option value="${escapeHtml(val)}" ${selected?'selected':''}>${escapeHtml(text)}</option>`}
+
+function openFishModal(id){const f=id?getFishById(id):null;const partnerOptions=state.partners.map(p=>optionHtml(p.id,p.name,p.id===f?.partnerId)).join('');modal(f?'Edit ikan':'Tambah ikan',`<form onsubmit="saveFish(event,'${id||''}')"><div class="form-grid"><div class="field"><label>Kode ikan *</label><input id="fmCode" required value="${escapeHtml(f?.code||nextFishCode())}"></div><div class="field"><label>Sumber kepemilikan *</label><select id="fmSource" onchange="toggleFishPartner()"><option value="own" ${f?.source!=='partner'?'selected':''}>Milik sendiri</option><option value="partner" ${f?.source==='partner'?'selected':''}>Ikan dari partner</option></select></div><div class="field" id="fishPartnerField"><label>Partner</label><select id="fmPartner"><option value="">Pilih partner</option>${partnerOptions}</select></div><div class="field"><label>Porsi partner (%)</label><input id="fmShare" type="number" min="0" max="100" step="1" value="${f?num(f.partnerShare):0}" placeholder="50"></div><div class="field"><label>Tanggal pembelian *</label><input id="fmDate" type="date" required value="${f?.purchaseDate||today()}"></div><div class="field"><label>Modal bibit / ekor *</label><input id="fmCost" type="number" required min="0" step="1000" value="${f?num(f.cost):200000}"><small>Contoh modal bibit sekitar Rp200.000.</small></div><div class="field"><label>Kondisi ikan *</label><select id="fmStatus"><option value="hidup" ${f?.status==='hidup'||!f?'selected':''}>Hidup</option><option value="mati" ${f?.status==='mati'?'selected':''}>Mati</option><option value="afkir" ${f?.status==='afkir'?'selected':''}>Afkir</option>${f?.status==='terjual'?'<option value="terjual" selected>Terjual</option>':''}</select></div><div class="field"><label>Tanggal kondisi/status</label><input id="fmStatusDate" type="date" value="${f?.statusDate||f?.purchaseDate||today()}"><small>Diisi sesuai tanggal ikan mulai mati/afkir atau terakhir diperbarui.</small></div></div><div class="field" style="margin-top:12px"><label>Catatan</label><textarea id="fmNotes" rows="3" placeholder="Contoh: ukuran, grade, warna, kondisi fisik...">${escapeHtml(f?.notes||'')}</textarea></div><div class="form-actions">${f?`<button type="button" class="btn danger" onclick="deleteFish('${f.id}')">Hapus ikan</button>`:''}<button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary" type="submit">Simpan</button></div></form>`);toggleFishPartner();document.getElementById('fmPartner').addEventListener('change',()=>{const p=getPartner(document.getElementById('fmPartner').value);if(p)document.getElementById('fmShare').value=num(p.defaultShare)});}
+function toggleFishPartner(){const source=document.getElementById('fmSource')?.value;const field=document.getElementById('fishPartnerField');if(field)field.style.opacity=source==='partner'?'1':'.55';const share=document.getElementById('fmShare');if(source==='own'&&share)share.value=0}
+function nextFishCode(){let i=1;const codes=new Set(state.fish.map(f=>f.code));while(codes.has('CH-'+String(i).padStart(4,'0')))i++;return 'CH-'+String(i).padStart(4,'0')}
+function saveFish(e,id){e.preventDefault();const source=document.getElementById('fmSource').value;const partnerId=source==='partner'?document.getElementById('fmPartner').value:'';const p=partnerId?getPartner(partnerId):null;const code=document.getElementById('fmCode').value.trim();if(getFishByCode(code)&&getFishByCode(code).id!==id){showToast('Kode ikan sudah dipakai.');return}let f=id?getFishById(id):null;const oldStatus=f?.status;const status=document.getElementById('fmStatus').value;const obj={id:f?.id||uid('fish'),code,source,partnerId:partnerId||null,partnerNameSnapshot:p?.name||'',partnerShare:source==='partner'?Math.max(0,Math.min(100,num(document.getElementById('fmShare').value))):0,purchaseDate:document.getElementById('fmDate').value,cost:num(document.getElementById('fmCost').value),status,statusDate:document.getElementById('fmStatusDate').value||document.getElementById('fmDate').value,notes:document.getElementById('fmNotes').value.trim()};if(f&&oldStatus==='terjual'&&status!=='terjual'&&state.sales.some(s=>s.fishId===f.id)){showToast('Ikan yang sudah terjual tidak boleh diubah statusnya.');return}if(f)Object.assign(f,obj);else state.fish.push(obj);closeModal();saveState();showToast('Data ikan tersimpan.');}
+function deleteFish(id){const f=getFishById(id);if(!f)return;if(state.sales.some(s=>s.fishId===id)){showToast('Hapus penjualan ikan ini dulu.');return}if(confirm(`Hapus ikan ${f.code}?`)){state.fish=state.fish.filter(x=>x.id!==id);closeModal();saveState();showToast('Ikan dihapus.')}}
+
+function openSaleModal(id){const s=id?state.sales.find(x=>x.id===id):null;if(!id){const available=state.fish.filter(f=>f.status==='hidup');if(!available.length){showToast('Belum ada ikan hidup yang bisa dijual.');return}const opts=available.map(f=>optionHtml(f.id,`${f.code} — ${f.source==='partner'?partnerName(f):'Milik sendiri'} — modal ${money(f.cost)}`)).join('');modal('Catat penjualan',`<form onsubmit="saveSale(event,'')"><div class="form-grid"><div class="field"><label>Ikan *</label><select id="smFish" required>${opts}</select></div><div class="field"><label>Tanggal jual *</label><input id="smDate" type="date" required value="${today()}"></div><div class="field"><label>Harga jual *</label><input id="smPrice" type="number" min="0" step="1000" required value="750000"></div><div class="field"><label>Pembeli</label><input id="smBuyer" placeholder="Nama pembeli"></div></div><div id="salePreview" class="note" style="margin-top:12px"></div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary">Simpan penjualan</button></div></form>`);document.getElementById('smFish').addEventListener('change',updateSalePreview);document.getElementById('smPrice').addEventListener('input',updateSalePreview);updateSalePreview();return}const f=getFishById(s.fishId);modal('Edit penjualan',`<form onsubmit="saveSale(event,'${id}')"><div class="form-grid"><div class="field"><label>Kode ikan</label><input value="${escapeHtml(s.code)}" disabled></div><div class="field"><label>Tanggal jual *</label><input id="smDate" type="date" required value="${s.date}"></div><div class="field"><label>Harga jual *</label><input id="smPrice" type="number" min="0" step="1000" required value="${num(s.price)}"></div><div class="field"><label>Pembeli</label><input id="smBuyer" value="${escapeHtml(s.buyer||'')}"></div></div><div class="note" style="margin-top:12px">Modal bibit: <b>${money(f?.cost||0)}</b> • Perubahan harga akan otomatis memperbarui laba dan bagi hasil.</div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary">Simpan perubahan</button></div></form>`)}
+function updateSalePreview(){const f=getFishById(document.getElementById('smFish').value);const price=num(document.getElementById('smPrice').value);const profit=price-(f?.cost||0);const share=Math.max(0,profit)*num(f?.partnerShare||0)/100;document.getElementById('salePreview').innerHTML=`Laba sebelum bagi hasil: <b class="${profit>=0?'positive':'negative'}">${money(profit)}</b> • Bagian partner: <b>${money(share)}</b> • Bagian usaha: <b>${money(Math.max(0,profit)-share)}</b>`}
+function saveSale(e,id){e.preventDefault();const date=document.getElementById('smDate').value,price=num(document.getElementById('smPrice').value),buyer=document.getElementById('smBuyer').value.trim();if(id){const s=state.sales.find(x=>x.id===id);if(!s)return;s.date=date;s.price=price;s.buyer=buyer;closeModal();saveState();showToast('Penjualan diperbarui.');return}const fishId=document.getElementById('smFish').value,f=getFishById(fishId);if(!f||f.status!=='hidup'){showToast('Ikan tidak tersedia untuk dijual.');return}const sale={id:uid('sale'),fishId,code:f.code,date,price,buyer};state.sales.push(sale);f.status='terjual';f.statusDate=date;closeModal();saveState();showToast('Penjualan tersimpan.');}
+function deleteSale(id){const s=state.sales.find(x=>x.id===id);if(!s)return;if(confirm(`Hapus penjualan ${s.code}?`)){const f=getFishById(s.fishId);if(f){f.status='hidup';f.statusDate=f.purchaseDate}state.sales=state.sales.filter(x=>x.id!==id);saveState();showToast('Penjualan dihapus dan ikan kembali hidup.')}}
+
+function openExpenseModal(id){const e=id?state.expenses.find(x=>x.id===id):null;modal(e?'Edit biaya':'Tambah biaya',`<form onsubmit="saveExpense(event,'${id||''}')"><div class="form-grid"><div class="field"><label>Tanggal *</label><input id="exDate" type="date" required value="${e?.date||today()}"></div><div class="field"><label>Kategori *</label><select id="exCat">${['Pakan','Listrik','Obat','Packing','Ongkir','Lainnya'].map(x=>optionHtml(x,x,(e?.category||'Pakan')===x)).join('')}</select></div><div class="field" style="grid-column:1/-1"><label>Keterangan *</label><input id="exDesc" required value="${escapeHtml(e?.desc||'')}"></div><div class="field"><label>Jumlah *</label><input id="exAmount" type="number" min="0" step="1000" required value="${e?num(e.amount):0}"></div></div><div class="form-actions">${e?`<button type="button" class="btn danger" onclick="deleteExpense('${e.id}')">Hapus</button>`:''}<button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary">Simpan</button></div></form>`)}
+function saveExpense(e,id){e.preventDefault();const obj={id:id||uid('exp'),date:document.getElementById('exDate').value,category:document.getElementById('exCat').value,desc:document.getElementById('exDesc').value.trim(),amount:num(document.getElementById('exAmount').value)};const old=id?state.expenses.find(x=>x.id===id):null;if(old)Object.assign(old,obj);else state.expenses.push(obj);closeModal();saveState();showToast('Biaya tersimpan.')}
+function deleteExpense(id){if(confirm('Hapus biaya ini?')){state.expenses=state.expenses.filter(x=>x.id!==id);closeModal();saveState();showToast('Biaya dihapus.')}}
+
+function openDebtModal(id){const d=id?state.debts.find(x=>x.id===id):null;modal(d?'Edit utang':'Catat utang',`<form onsubmit="saveDebt(event,'${id||''}')"><div class="form-grid"><div class="field"><label>Tanggal hutang *</label><input id="dbDate" type="date" required value="${d?.date||today()}"></div><div class="field"><label>Jumlah hutang *</label><input id="dbAmount" type="number" min="0" step="1000" required value="${d?num(d.amount):0}"></div><div class="field"><label>Utang kepada *</label><input id="dbCreditor" required value="${escapeHtml(d?.creditor||'')}"></div><div class="field"><label>Jenis kegunaan</label><select id="dbCat">${['Pembelian aset','Operasional','Lainnya'].map(x=>optionHtml(x,x,(d?.category||'Pembelian aset')===x)).join('')}</select></div><div class="field" style="grid-column:1/-1"><label>Kegunaan *</label><input id="dbPurpose" required value="${escapeHtml(d?.purpose||'')}"></div><div class="field" style="grid-column:1/-1"><label>Nama aset (opsional)</label><input id="dbAsset" value="${escapeHtml(d?.assetName||'')}" placeholder="Contoh: Aquarium display 120 cm"></div></div><div class="note" style="margin-top:12px">Pencatatan utang <b>tidak otomatis mengurangi laba</b>. Pembayaran utang dicatat di menu pembayaran agar sisa kewajiban dan arus kas tetap jelas.</div><div class="form-actions">${d?`<button type="button" class="btn danger" onclick="deleteDebt('${d.id}')">Hapus</button>`:''}<button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary">Simpan</button></div></form>`)}
+function saveDebt(e,id){e.preventDefault();const obj={id:id||uid('debt'),date:document.getElementById('dbDate').value,amount:num(document.getElementById('dbAmount').value),creditor:document.getElementById('dbCreditor').value.trim(),category:document.getElementById('dbCat').value,purpose:document.getElementById('dbPurpose').value.trim(),assetName:document.getElementById('dbAsset').value.trim()};const old=id?state.debts.find(x=>x.id===id):null;if(old)Object.assign(old,obj);else state.debts.push(obj);closeModal();saveState();showToast('Utang tersimpan.')}
+function deleteDebt(id){if(state.debtPayments.some(p=>p.debtId===id)){showToast('Hapus pembayaran utang ini dulu.');return}if(confirm('Hapus catatan utang ini?')){state.debts=state.debts.filter(x=>x.id!==id);closeModal();saveState();showToast('Utang dihapus.')}}
+function openDebtPaymentModal(){if(!state.debts.length){showToast('Belum ada utang yang bisa dibayar.');return}const debts=state.debts.filter(d=>outstandingDebt(d)>0);if(!debts.length){showToast('Semua utang sudah lunas.');return}modal('Catat pembayaran utang',`<form onsubmit="saveDebtPayment(event)"><div class="form-grid"><div class="field" style="grid-column:1/-1"><label>Utang yang dibayar *</label><select id="dpDebt">${debts.map(d=>optionHtml(d.id,`${d.creditor} — sisa ${money(outstandingDebt(d))}`)).join('')}</select></div><div class="field"><label>Tanggal pembayaran *</label><input id="dpDate" type="date" required value="${today()}"></div><div class="field"><label>Jumlah *</label><input id="dpAmount" type="number" min="0" step="1000" required value="0"></div><div class="field" style="grid-column:1/-1"><label>Asal pembayaran *</label><select id="dpSource"><option value="profit">Keuntungan bisnis</option><option value="other">Dana lain</option></select></div><div class="field" style="grid-column:1/-1"><label>Catatan</label><input id="dpNote" placeholder="Opsional"></div></div><div class="note" style="margin-top:12px">Asal pembayaran dibedakan agar kamu bisa melihat berapa utang dibayar dari keuntungan usaha dan berapa dari dana lain.</div><div class="form-actions"><button type="button" class="btn" onclick="closeModal()">Batal</button><button class="btn primary">Simpan</button></div></form>`)}
+function saveDebtPayment(e){e.preventDefault();const debt=getDebt(document.getElementById('dpDebt').value),amount=num(document.getElementById('dpAmount').value);if(amount<=0){showToast('Jumlah pembayaran harus lebih dari 0.');return}if(amount>outstandingDebt(debt)){showToast('Pembayaran melebihi sisa utang.');return}state.debtPayments.push({id:uid('pay'),debtId:debt.id,date:document.getElementById('dpDate').value,amount,source:document.getElementById('dpSource').value,note:document.getElementById('dpNote').value.trim()});closeModal();saveState();showToast('Pembayaran utang tersimpan.')}
+function getDebt(id){return state.debts.find(x=>x.id===id)}
+function deleteDebtPayment(id){if(confirm('Hapus pembayaran ini?')){state.debtPayments=state.debtPayments.filter(x=>x.id!==id);saveState();showToast('Pembayaran dihapus.')}}
+
+function addPartner(){const name=document.getElementById('partnerNameInput').value.trim();const share=Math.max(0,Math.min(100,num(document.getElementById('partnerShareInput').value)));if(!name){showToast('Isi nama partner.');return}state.partners.push({id:uid('partner'),name,defaultShare:share});document.getElementById('partnerNameInput').value='';saveState();showToast('Partner ditambahkan.')}
+function deletePartner(id){if(state.fish.some(f=>f.partnerId===id)){showToast('Partner masih terhubung dengan data ikan.');return}if(confirm('Hapus partner ini?')){state.partners=state.partners.filter(p=>p.id!==id);saveState();showToast('Partner dihapus.')}}
+function saveProfile(){state.profile.name=document.getElementById('profileName').value.trim()||'Bookkeeping';state.profile.subtitle=document.getElementById('profileSubtitle').value.trim()||'Pembukuan usaha pembesaran Channa Auranti Gondrong';state.profile.capital=num(document.getElementById('profileCapital').value);state.profile.theme=document.getElementById('profileTheme').value||'#0f766e';saveState();showToast('Profil tersimpan.')}
+function removeWallpaper(){state.profile.wallpaper='';document.getElementById('wallpaperFile').value='';saveState();showToast('Wallpaper dihapus.')}
+document.getElementById('wallpaperFile').addEventListener('change',async e=>{const file=e.target.files?.[0];if(!file)return;try{const data=await resizeImage(file,1600);state.profile.wallpaper=data;saveState();showToast('Wallpaper diperbarui.')}catch(err){showToast('Gagal memproses wallpaper.')}});
+function resizeImage(file,maxW){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>{const img=new Image();img.onload=()=>{const scale=Math.min(1,maxW/img.width);const c=document.createElement('canvas');c.width=Math.round(img.width*scale);c.height=Math.round(img.height*scale);c.getContext('2d').drawImage(img,0,0,c.width,c.height);resolve(c.toDataURL('image/jpeg',.8))};img.onerror=reject;img.src=r.result};r.onerror=reject;r.readAsDataURL(file)})}
+
+function backupJson(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});downloadBlob(blob,`channagrow-backup-${today()}.json`);showToast('Backup dibuat.')}
+function restoreJson(e){const file=e.target.files?.[0];if(!file)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x||!x.profile||!Array.isArray(x.fish))throw new Error('Format invalid');state={...clone(defaultState),...x,profile:{...defaultState.profile,...(x.profile||{})}};saveState();showToast('Backup berhasil dipulihkan.')}catch(err){showToast('File backup tidak valid.')}};r.readAsText(file)}
+function loadDemo(){if(!confirm('Data sekarang akan diganti dengan data contoh. Lanjutkan?'))return;const p1={id:'p1',name:'Andi',defaultShare:50},p2={id:'p2',name:'Budi',defaultShare:30};const d=currentMonth();state={version:1,profile:{...state.profile,name:'Auranti Farm Demo',subtitle:'Contoh pembukuan Channa Auranti Gondrong',capital:5000000,theme:'#0f766e',wallpaper:''},partners:[p1,p2],fish:[
+{id:'f1',code:'CH-0001',source:'partner',partnerId:'p1',partnerNameSnapshot:'Andi',partnerShare:50,purchaseDate:d+'-02',cost:200000,status:'terjual',statusDate:d+'-10',notes:'Grade A'},
+{id:'f2',code:'CH-0002',source:'partner',partnerId:'p1',partnerNameSnapshot:'Andi',partnerShare:50,purchaseDate:d+'-03',cost:210000,status:'terjual',statusDate:d+'-12',notes:'Grade A'},
+{id:'f3',code:'CH-0003',source:'partner',partnerId:'p2',partnerNameSnapshot:'Budi',partnerShare:30,purchaseDate:d+'-05',cost:200000,status:'hidup',statusDate:d+'-05',notes:''},
+{id:'f4',code:'CH-0004',source:'own',partnerId:null,partnerNameSnapshot:'',partnerShare:0,purchaseDate:d+'-06',cost:195000,status:'mati',statusDate:d+'-15',notes:'Contoh ikan mati'},
+{id:'f5',code:'CH-0005',source:'own',partnerId:null,partnerNameSnapshot:'',partnerShare:0,purchaseDate:d+'-07',cost:200000,status:'hidup',statusDate:d+'-07',notes:''}
+],sales:[{id:'s1',fishId:'f1',code:'CH-0001',date:d+'-10',price:750000,buyer:'Buyer A'},{id:'s2',fishId:'f2',code:'CH-0002',date:d+'-12',price:1500000,buyer:'Buyer B'}],expenses:[{id:'e1',date:d+'-08',category:'Pakan',desc:'Pakan bulan ini',amount:250000},{id:'e2',date:d+'-14',category:'Listrik',desc:'Listrik aquarium',amount:150000}],debts:[{id:'db1',date:d+'-01',amount:2000000,creditor:'Toko Aquarium',category:'Pembelian aset',purpose:'Pembelian aquarium display',assetName:'Aquarium display'}],debtPayments:[{id:'pay1',debtId:'db1',date:d+'-20',amount:500000,source:'profit',note:'Cicilan 1'}]};saveState();showToast('Data demo dimuat.');goPage('dashboard')}
+function resetAll(){if(!confirm('Hapus SEMUA data usaha dari perangkat ini? Tindakan ini tidak bisa dibatalkan kecuali ada backup.'))return;state=clone(defaultState);saveState();showToast('Semua data dihapus.')}
+
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function csvEscape(v){const s=String(v??'');return '"'+s.replace(/"/g,'""')+'"'}
+function exportRows(rows,name){const blob=new Blob([rows.map(r=>r.map(csvEscape).join(',')).join('\n')],{type:'text/csv;charset=utf-8'});downloadBlob(blob,name)}
+function exportSalesCsv(){const rows=[['Tanggal','Kode','Pembeli','Modal','Harga Jual','Laba','Partner','Porsi Partner','Bagi Hasil Partner']];state.sales.forEach(s=>{const f=getFishById(s.fishId);rows.push([s.date,s.code,s.buyer||'',f?.cost||0,s.price,profitFromSale(s),f?.source==='partner'?partnerName(f):'Milik sendiri',f?.partnerShare||0,partnerPayout(s)])});exportRows(rows,`penjualan-${today()}.csv`)}
+function exportExpenseCsv(){const rows=[['Tanggal','Kategori','Keterangan','Jumlah']];state.expenses.forEach(e=>rows.push([e.date,e.category,e.desc,e.amount]));exportRows(rows,`biaya-${today()}.csv`)}
+function exportReportCsv(){const key=document.getElementById('reportMonth').value||currentMonth(),m=metrics(key),s=stockSnapshot(key);const rows=[['Laporan','Nilai'],['Bulan',monthLabel(key)],['Penjualan',m.revenue],['HPP bibit terjual',m.cogs],['Laba kotor sebelum bagi hasil',m.gross],['Bagi hasil partner',m.partner],['Biaya operasional',m.expenses],['Kerugian ikan mati/afkir',m.writeoffs],['Laba bersih bisnis',m.net],['Stok hidup',s.hidup],['Stok mati',s.mati],['Stok afkir',s.afkir],['Stok terjual',s.terjual],[],['Pendapatan partner','']];Object.entries((()=>{const map={};m.sales.forEach(x=>{const f=getFishById(x.fishId);if(f?.source==='partner'){const n=partnerName(f);map[n]=(map[n]||0)+partnerPayout(x)}});return map})()).forEach(([n,v])=>rows.push([n,v]));exportRows(rows,`laporan-${key}.csv`)}
+
+// Improve default UX: set initial partner field and prevent entering invalid share for own fish.
+// PWA: register the service worker and expose Chrome's install prompt when available.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.warn('Service worker gagal didaftarkan:', err));
+  });
+}
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.hidden = false;
+});
+window.addEventListener('appinstalled', () => {
+  deferredInstallPrompt = null;
+  const btn = document.getElementById('installAppBtn');
+  if (btn) btn.hidden = true;
+  if (typeof showToast === 'function') showToast('Bookkeeping berhasil di-install.');
+});
+window.addEventListener('click', async (event) => {
+  const btn = event.target.closest('#installAppBtn');
+  if (!btn || !deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+  btn.hidden = true;
+});
+
+</script>
+</body>
+</html>
