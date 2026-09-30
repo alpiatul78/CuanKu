@@ -1,6 +1,6 @@
 {
-  "name": "Bookkeeping",
-  "short_name": "Bookkeeping",
+  "name": "CuanKu",
+  "short_name": "CuanKu",
   "description": "Aplikasi pembukuan usaha",
   "start_url": "./",
   "scope": "./",
@@ -22,3 +22,4 @@
     }
   ]
 }
+
